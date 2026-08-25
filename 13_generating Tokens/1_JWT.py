@@ -4,8 +4,8 @@ from datetime import datetime,timedelta, timezone
 
 app=FastAPI()
 
+#JWT config
 SECRET_KEY="mysecret"
-
 ALGORITHM="HS256"
 
 #creating token
@@ -21,7 +21,7 @@ def create_token(data:dict):
 # Login API(token generate)
 @app.post("/login")
 def login(username:str,password:str):
-    if username!="admin" or password!="123":
+    if username!="admin" or password!="1234":
         raise HTTPException(
             status_code=401,
             detail="Invalid username and password"
@@ -34,7 +34,7 @@ def login(username:str,password:str):
     }
 
 # token verification
-def varify_token(token: str=Header(None)):
+def verify_token(token: str=Header(None)):
     try:
         payload=jwt.decode(token,SECRET_KEY,algorithms=ALGORITHM)
         return payload
@@ -46,8 +46,9 @@ def varify_token(token: str=Header(None)):
 
 # protected route
 @app.get("/secure")
-def secure_data(user=Depends(varify_token)):
+def secure_data(user=Depends(verify_token)):
     return {
         "message":"Secure Data Accessed",
         "user":user
     }
+
